@@ -73,18 +73,29 @@ public class metodosSQL {
             statement.setInt(4, equipoId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("Equipo dado de alta correctamente.");
+                System.out.println("Jugador dado de alta correctamente.");
             } else {
-                System.out.println("Error al dar de alta el equipo.");
+                System.out.println("Error al dar de alta al jugador.");
             }
         } catch (SQLException e) {
             System.out.println("Error al ejecutar la consulta: " + e.getMessage());
         }
     }
-    public static void darBajaEquipo(Scanner scan, Connection con){
+    public static void darBajaEquipo(Scanner scan, Connection con) {
         System.out.println("----- DAR DE BAJA A UN EQUIPO -----");
         System.out.print("Introduce el nombre del equipo a dar de baja: ");
         String nombreEquipo = scan.nextLine();
+
+        // Borrar jugadores asociados al equipo
+        String queryBorrarJugadores = "DELETE FROM jugadores WHERE equipo_id = (SELECT id FROM equipos WHERE nombre=?)";
+        try (PreparedStatement statementBorrarJugadores = con.prepareStatement(queryBorrarJugadores)) {
+            statementBorrarJugadores.setString(1, nombreEquipo);
+
+            int jugadoresBorrados = statementBorrarJugadores.executeUpdate();
+            System.out.println("Se han borrado " + jugadoresBorrados + " jugadores asociados al equipo.");
+        } catch (SQLException e) {
+            System.out.println("Error al borrar los jugadores: " + e.getMessage());
+        }
 
         // Consulta asociada al método
         String query = "DELETE FROM equipos WHERE nombre = ?";
@@ -101,6 +112,7 @@ public class metodosSQL {
             System.out.println("Error al ejecutar la consulta: " + e.getMessage());
         }
     }
+
     public static void darBajaJugador(Scanner scan, Connection con) {
         System.out.println("----- DAR DE BAJA A UN JUGADOR -----");
         System.out.print("Introduce el nombre del jugador a dar de baja: ");
@@ -289,9 +301,8 @@ public class metodosSQL {
     }
     public static void modificarJugador(Scanner scan, Connection con) {
         System.out.println("----- MODIFICAR INFORMACIÓN DE UN JUGADOR -----");
-        System.out.print("Introduce el código del jugador a modificar: ");
-        int codigoJugador = scan.nextInt();
-        scan.nextLine();
+        System.out.print("Introduce el nombre del jugador a modificar: ");
+        String nombreJugador = scan.nextLine();
 
         System.out.print("¿Deseas modificar el nombre del jugador? (s/n): ");
         String opcionNombre = scan.nextLine();
@@ -362,7 +373,7 @@ public class metodosSQL {
             queryBuilder.append(" equipo_id = ?");
         }
 
-        queryBuilder.append(" WHERE id = ?");
+        queryBuilder.append(" WHERE nombre = ?");
 
         try (PreparedStatement statement = con.prepareStatement(queryBuilder.toString())) {
             int parameterIndex = 1;
@@ -383,7 +394,7 @@ public class metodosSQL {
                 statement.setInt(parameterIndex++, nuevoEquipo);
             }
 
-            statement.setInt(parameterIndex, codigoJugador);
+            statement.setString(parameterIndex, nombreJugador);
 
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
@@ -441,7 +452,4 @@ public class metodosSQL {
             }
         }
     }
-
-
-
 }
