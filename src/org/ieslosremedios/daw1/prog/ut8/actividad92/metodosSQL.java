@@ -400,7 +400,7 @@ public class metodosSQL {
             if (rowsAffected > 0) {
                 System.out.println("Información del jugador modificada correctamente.");
             } else {
-                System.out.println("No se encontró un jugador con ese código.");
+                System.out.println("No se encontró un jugador con ese nombre.");
             }
         } catch (SQLException e) {
             System.out.println("Error al ejecutar la consulta: " + e.getMessage());

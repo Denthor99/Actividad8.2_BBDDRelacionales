@@ -17,6 +17,5 @@ id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	nombre VARCHAR(20),
     apellidos VARCHAR(35),
     fechaNacimiento DATE,
-    equipo_id INT UNSIGNED,
-    FOREIGN KEY (equipo_id) REFERENCES equipos(id)
+    equipo_id INT UNSIGNED
 );
