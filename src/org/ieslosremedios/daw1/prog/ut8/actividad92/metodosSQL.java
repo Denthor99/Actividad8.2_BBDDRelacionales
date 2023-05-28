@@ -1,9 +1,8 @@
 package org.ieslosremedios.daw1.prog.ut8.actividad92;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.*;
 import java.util.Scanner;
 
 public class metodosSQL {
@@ -180,4 +179,269 @@ public class metodosSQL {
             System.out.println("Error al ejecutar la consulta: " + e.getMessage());
         }
     }
+
+    public static void modificarEquipo(Scanner scan, Connection con) {
+        System.out.println("----- MODIFICAR INFORMACIÓN DE UN EQUIPO -----");
+        System.out.print("Introduce el nombre del equipo a modificar: ");
+        String nombreEquipo = scan.nextLine();
+
+        System.out.print("¿Deseas modificar el nombre del equipo? (s/n): ");
+        String opcionNombre = scan.nextLine();
+
+        String nuevoNombreEquipo = null;
+        if (opcionNombre.equalsIgnoreCase("s")) {
+            System.out.print("Introduce el nuevo nombre del equipo: ");
+            nuevoNombreEquipo = scan.nextLine();
+        }
+
+        System.out.print("¿Deseas modificar el estadio del equipo? (s/n): ");
+        String opcionEstadio = scan.nextLine();
+
+        String nuevoEstadio = null;
+        if (opcionEstadio.equalsIgnoreCase("s")) {
+            System.out.print("Introduce el nuevo estadio del equipo: ");
+            nuevoEstadio = scan.nextLine();
+        }
+
+        System.out.print("¿Deseas modificar la ciudad del equipo? (s/n): ");
+        String opcionCiudad = scan.nextLine();
+
+        String nuevaCiudad = null;
+        if (opcionCiudad.equalsIgnoreCase("s")) {
+            System.out.print("Introduce la nueva ciudad del equipo: ");
+            nuevaCiudad = scan.nextLine();
+        }
+
+        System.out.print("¿Deseas modificar el número de socios del equipo? (s/n): ");
+        String opcionSocios = scan.nextLine();
+
+        int nuevoNumSocios = 0;
+        if (opcionSocios.equalsIgnoreCase("s")) {
+            System.out.print("Introduce el nuevo número de socios del equipo: ");
+            nuevoNumSocios = scan.nextInt();
+            scan.nextLine();
+        }
+
+        // Consulta asociada al método
+        StringBuilder queryBuilder = new StringBuilder("UPDATE equipos SET");
+        boolean setClauseAdded = false;
+
+        if (nuevoNombreEquipo != null) {
+            queryBuilder.append(" nombre = ?");
+            setClauseAdded = true;
+        }
+
+        if (nuevoEstadio != null) {
+            if (setClauseAdded) {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append(" estadio = ?");
+            setClauseAdded = true;
+        }
+
+        if (nuevaCiudad != null) {
+            if (setClauseAdded) {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append(" ciudad = ?");
+            setClauseAdded = true;
+        }
+
+        if (nuevoNumSocios != 0) {
+            if (setClauseAdded) {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append(" num_socios = ?");
+        }
+
+        queryBuilder.append(" WHERE nombre = ?");
+
+        try (PreparedStatement statement = con.prepareStatement(queryBuilder.toString())) {
+            int parameterIndex = 1;
+
+            if (nuevoNombreEquipo != null) {
+                statement.setString(parameterIndex++, nuevoNombreEquipo);
+            }
+
+            if (nuevoEstadio != null) {
+                statement.setString(parameterIndex++, nuevoEstadio);
+            }
+
+            if (nuevaCiudad != null) {
+                statement.setString(parameterIndex++, nuevaCiudad);
+            }
+
+            if (nuevoNumSocios != 0) {
+                statement.setInt(parameterIndex++, nuevoNumSocios);
+            }
+
+            statement.setString(parameterIndex, nombreEquipo);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Información del equipo modificada correctamente.");
+            } else {
+                System.out.println("No se encontró un equipo con ese nombre.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al ejecutar la consulta: " + e.getMessage());
+        }
+    }
+    public static void modificarJugador(Scanner scan, Connection con) {
+        System.out.println("----- MODIFICAR INFORMACIÓN DE UN JUGADOR -----");
+        System.out.print("Introduce el código del jugador a modificar: ");
+        int codigoJugador = scan.nextInt();
+        scan.nextLine();
+
+        System.out.print("¿Deseas modificar el nombre del jugador? (s/n): ");
+        String opcionNombre = scan.nextLine();
+
+        String nuevoNombre = null;
+        if (opcionNombre.equalsIgnoreCase("s")) {
+            System.out.print("Introduce el nuevo nombre del jugador: ");
+            nuevoNombre = scan.nextLine();
+        }
+
+        System.out.print("¿Deseas modificar los apellidos del jugador? (s/n): ");
+        String opcionApellidos = scan.nextLine();
+
+        String nuevosApellidos = null;
+        if (opcionApellidos.equalsIgnoreCase("s")) {
+            System.out.print("Introduce los nuevos apellidos del jugador: ");
+            nuevosApellidos = scan.nextLine();
+        }
+
+        System.out.print("¿Deseas modificar la fecha de nacimiento del jugador? (s/n): ");
+        String opcionFechaNacimiento = scan.nextLine();
+
+        String nuevaFechaNacimiento = null;
+        if (opcionFechaNacimiento.equalsIgnoreCase("s")) {
+            System.out.print("Introduce la nueva fecha de nacimiento del jugador (YYYY-MM-DD): ");
+            nuevaFechaNacimiento = scan.nextLine();
+        }
+
+        System.out.print("¿Deseas modificar el equipo en el cual juega el jugador? (s/n): ");
+        String opcionEquipo = scan.nextLine();
+
+        int nuevoEquipo = 0;
+        if (opcionEquipo.equalsIgnoreCase("s")) {
+            System.out.print("Introduce el nuevo equipo en el cual juega el jugador (código de equipo): ");
+            nuevoEquipo = scan.nextInt();
+            scan.nextLine();
+        }
+
+        // Consulta asociada al método
+        StringBuilder queryBuilder = new StringBuilder("UPDATE jugadores SET");
+        boolean setClauseAdded = false;
+
+        if (nuevoNombre != null) {
+            queryBuilder.append(" nombre = ?");
+            setClauseAdded = true;
+        }
+
+        if (nuevosApellidos != null) {
+            if (setClauseAdded) {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append(" apellidos = ?");
+            setClauseAdded = true;
+        }
+
+        if (nuevaFechaNacimiento != null) {
+            if (setClauseAdded) {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append(" fechaNacimiento = ?");
+            setClauseAdded = true;
+        }
+
+        if (nuevoEquipo != 0) {
+            if (setClauseAdded) {
+                queryBuilder.append(",");
+            }
+            queryBuilder.append(" equipo_id = ?");
+        }
+
+        queryBuilder.append(" WHERE id = ?");
+
+        try (PreparedStatement statement = con.prepareStatement(queryBuilder.toString())) {
+            int parameterIndex = 1;
+
+            if (nuevoNombre != null) {
+                statement.setString(parameterIndex++, nuevoNombre);
+            }
+
+            if (nuevosApellidos != null) {
+                statement.setString(parameterIndex++, nuevosApellidos);
+            }
+
+            if (nuevaFechaNacimiento != null) {
+                statement.setString(parameterIndex++, nuevaFechaNacimiento);
+            }
+
+            if (nuevoEquipo != 0) {
+                statement.setInt(parameterIndex++, nuevoEquipo);
+            }
+
+            statement.setInt(parameterIndex, codigoJugador);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Información del jugador modificada correctamente.");
+            } else {
+                System.out.println("No se encontró un jugador con ese código.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al ejecutar la consulta: " + e.getMessage());
+        }
+    }
+    public static void exportarMetadatos(Scanner scan, Connection con) {
+        FileWriter fileWriter = null;
+
+        try {
+            // Obtiene los metadatos de la base de datos
+            DatabaseMetaData metaDatos = con.getMetaData();
+
+            // Solicita al usuario el nombre de la tabla a consultar
+            System.out.print("Introduce el nombre de la tabla a consultar: ");
+            String tabla = scan.nextLine();
+
+            // Crea el archivo de texto para exportar los metadatos
+            System.out.print("Introduce la ruta del archivo de salida: ");
+            String ruta = scan.nextLine();
+            fileWriter = new FileWriter(ruta);
+
+            // Obtiene los metadatos de la tabla especificada
+            ResultSet columnas = metaDatos.getColumns(null, null, tabla, null);
+
+            // Verifica si la tabla existe
+            if (columnas.next()) {
+                fileWriter.write("Tabla: " + tabla + "\n");
+
+                // Recorre los metadatos de las columnas de la tabla
+                while (columnas.next()) {
+                    String columnName = columnas.getString("COLUMN_NAME");
+                    String columnType = columnas.getString("TYPE_NAME");
+                    fileWriter.write("    Campo: " + columnName + ", Tipo: " + columnType + "\n");
+                }
+
+                System.out.println("Los metadatos se han exportado correctamente.");
+            } else {
+                System.out.println("No se encontró la tabla especificada en la base de datos.");
+            }
+        } catch (SQLException | IOException e) {
+            System.err.println("Los metadatos no se han podido exportar correctamente " + e.getMessage());
+        } finally {
+            // Cierra el archivo
+            try {
+                if (fileWriter != null)
+                    fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
 }

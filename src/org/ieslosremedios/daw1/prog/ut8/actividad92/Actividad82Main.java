@@ -5,8 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-public class Actividad82Main extends metodosSQL {
-    private static final String URL = "jdbc:mysql://localhost:3306/campeonato";
+public class Actividad82Main extends metodosSQL{
+    private static final String URL = "jdbc:mariadb://localhost:3306/campeonato";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
@@ -14,8 +14,9 @@ public class Actividad82Main extends metodosSQL {
         Scanner scan = new Scanner(System.in);
         try {
             Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+            Boolean salir=false;
             int opciones;
-            while (opciones != 10) {
+            while (!salir) {
                 mostrarMenu();
                 opciones = scan.nextInt();
                 scan.nextLine();
@@ -42,24 +43,25 @@ public class Actividad82Main extends metodosSQL {
                         modificarEquipo(scan, con);
                         break;
                     case 8:
-                        modificarJugador(scanner, connection);
+                        modificarJugador(scan, con);
                         break;
                     case 9:
-                        exportarMetadatos(Connection con);
+                        exportarMetadatos(scan,con);
                         break;
                     case 10:
                         System.out.println("Saliendo del programa...");
+                        salir=true;
                         scan.close();
                         con.close();
                         break;
                     default:
-                        System.out.println("Opción no válida. Introduce un número del 1 al 9.");
+                        System.out.println("Opción no válida. Introduce un número del 1 al 10.");
                         break;
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    scan.close();
+        scan.close();
     }
 }
